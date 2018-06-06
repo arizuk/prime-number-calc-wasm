@@ -62,11 +62,11 @@ const main = (results) => {
 
   const run = (primer, view) => {
     const prime = parseInt(elements.form.value);
-    const startTime = new Date();
+    const t0 = performance.now();
     const nextPrime = primer(prime);
-    let elapsedTime = new Date() - startTime;
+    const dt = performance.now() - t0;
     // elapsedTime /= 1000;
-    view.innerHTML = `${commify(nextPrime)} (${elapsedTime} ms)`;
+    view.innerHTML = `${commify(nextPrime)} (${dt.toFixed(1)} ms)`;
   };
 
   const getPrimeWithWasm = () => run(results.instance.exports.get_prime, elements.wasmResult);
