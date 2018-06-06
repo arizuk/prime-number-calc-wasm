@@ -11,6 +11,7 @@ pub extern "C" fn get_prime(start: u32) -> u32 {
 
 fn is_prime(v: u32) -> bool {
     match v {
+        0 => false,
         1 => true,
         2 => true,
         _ => {

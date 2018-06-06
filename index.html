@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>List prime numbers</title>
+</head>
+<h1>next prime number calculation</h1>
+<input id="form" type="number" value="1000000">
+<input id="run-button" type="submit" value="run">
+
+<h2>wasm</h2>
+<p id="wasm-result"></p>
+
+<h2>js</h2>
+<p id="js-result"></p>
+
+<body>
+
+<script>
+const commify = (s) => {
+  return s.toString()
+          .split('').reverse().join('')
+          .replace(/(\d\d\d)(?=\d)(?!\d*\.)/g, '$1,')
+          .split('').reverse().join('');
+};
+
+const isPrime = (v) => {
+  if (v === 0) return false;
+  if (v === 1) return true;
+  if (v === 2) return true;
+
+  for (let i = 2; i < v; i++) {
+    if (v % i === 0) {
+      // console.log(`${v} % ${i} = 0`);
+      return false;
+    }
+  }
+  return true;
+};
+
+const getPrime = (start) => {
+  let i = start + 1;
+  while(true) {
+    if (isPrime(i)) {
+      return i;
+    }
+    // console.log(`${i} is not prime number.`);
+    i = i + 1;
+  }
+};
+
+const elements = {
+  form: document.getElementById('form'),
+  button: document.getElementById('run-button'),
+  wasmResult: document.getElementById('wasm-result'),
+  jsResult: document.getElementById('js-result'),
+};
+
+const main = (results) => {
+
+  const run = (primer, view) => {
+    const prime = parseInt(elements.form.value);
+    const startTime = new Date();
+    const nextPrime = primer(prime);
+    let elapsedTime = new Date() - startTime;
+    // elapsedTime /= 1000;
+    view.innerHTML = `${commify(nextPrime)} (${elapsedTime} ms)`;
+  };
+
+  const getPrimeWithWasm = () => run(results.instance.exports.get_prime, elements.wasmResult);
+  const getPrimeWithJs = () => run(getPrime, elements.jsResult);
+
+  elements.button.addEventListener("click", () => {
+    elements.wasmResult.innerHTML = '';
+    elements.jsResult.innerHTML = '';
+    setTimeout(() => {
+      getPrimeWithWasm();
+      setTimeout(getPrimeWithJs, 0);
+    }, 0);
+  });
+};
+
+fetch('/target/wasm32-unknown-unknown/release/prime.wasm')
+    .then(response => response.arrayBuffer())
+    .then(bytes => WebAssembly.instantiate(bytes, {}))
+    .then(main);
+</script>
+
+</body>
+</html>
