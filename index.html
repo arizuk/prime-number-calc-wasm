@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>List prime numbers</title>
+  <title>Next prime number calculation</title>
 </head>
-<h1>next prime number calculation</h1>
+<h1>Next prime number calculation</h1>
 <input id="form" type="number" value="1000000">
 <input id="run-button" type="submit" value="run">
 
@@ -82,7 +82,7 @@ const main = (results) => {
   });
 };
 
-fetch('/target/wasm32-unknown-unknown/release/prime.wasm')
+fetch('./prime.wasm')
     .then(response => response.arrayBuffer())
     .then(bytes => WebAssembly.instantiate(bytes, {}))
     .then(main);
